@@ -24,8 +24,6 @@ defaults
         mode    http
         option  httplog
         option  dontlognull
-        option forwardfor
-        option http-server-close
         timeout connect 5000
         timeout client  50000
         timeout server  50000
@@ -36,24 +34,28 @@ defaults
         errorfile 502 /etc/haproxy/errors/502.http
         errorfile 503 /etc/haproxy/errors/503.http
         errorfile 504 /etc/haproxy/errors/504.http
+        option forwardfor
+        option http-server-close
 
 frontend www-http
-        bind 0.0.0.0:80
-        reqadd X-Forwarded-Proto:\ http
-        default_backend www-backend
-
+        bind *:80
+        option forwardfor
+        http-request set-header X-Forwarded-Proto http
+        default_backend webservers
+        
 frontend www-https
-        bind 0.0.0.0:443 ssl crt /etc/haproxy/certs/www.wardencode.tech.pem
-        reqadd X-Forwarded-Proto:\ https
+        bind *:443 ssl crt /etc/haproxy/certs/www.abdulqodiroladimeji.tech.pem
         acl letsencrypt-acl path_beg /.well-known/acme-challenge/
         use_backend letsencrypt-backend if letsencrypt-acl
-        default_backend www-backend
+        http-request set-header X-Forwarded-Proto http
+        default_backend webservers
 
-backend www-backend
-        redirect scheme https if !{ ssl_fc }
+backend webservers
         balance roundrobin
-        server 11303-web-01 3.238.126.83:80 check
-        server 11303-web-02 18.232.125.225:80 check
+        redirect scheme https if !{ ssl_fc }
+        server webserver1 44.192.247.200:80
+        server webserver2 18.204.220.15:80
+        option httpchk
 
 backend letsencrypt-backend
         server letsencrypt 127.0.0.1:54321
