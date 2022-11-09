@@ -1,1 +1,1 @@
-# This is a readme file for alx-system_engineering-devops by Sodiq Akanmu
+# This is a readme file by Sodiq Akanmu
