@@ -1,1 +1,1 @@
-# This is a readme file for alx project by Sodiq Akanmu
+# This is a readme file for alx project by Sodiq Akanmu for alx
